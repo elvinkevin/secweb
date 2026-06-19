@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - SecWeb{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <h1>Dashboard</h1>
+        <p>This page is only visible to logged-in users.</p>
+
+        <table class="info-table">
+            <tr><th>User ID</th><td>{{ user.id }}</td></tr>
+            <tr><th>Username</th><td>{{ user.username }}</td></tr>
+            <tr><th>Email</th><td>{{ user.email }}</td></tr>
+            <tr><th>Account Created</th><td>{{ user.created_at }}</td></tr>
+        </table>
+
+        <p class="hint">
+            Training idea: try accessing this route without logging in, or
+            try tampering with the session cookie / accessing another
+            user's data (IDOR) if extra routes are added.
+        </p>
+    </div>
+{% endblock %}

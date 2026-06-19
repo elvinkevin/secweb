@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Set Up MFA - SecWeb{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <h1>Set Up Two-Factor Authentication</h1>
+    <p>Scan the QR code below with an authenticator app (Google Authenticator, Authy, etc.), then enter the 6-digit code to confirm.</p>
+
+    <div style="text-align:center;margin:1.5rem 0">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ provision_url | urlencode }}&size=200x200"
+             alt="MFA QR code" width="200" height="200"
+             style="border:4px solid var(--border);border-radius:6px">
+    </div>
+
+    <p style="font-size:.9rem;color:var(--muted)">
+        Can't scan? Enter this secret manually in your app:
+    </p>
+    <code style="display:block;background:#f1f5f9;padding:.6rem 1rem;border-radius:6px;font-size:.9rem;word-break:break-all;margin-bottom:1.5rem">{{ secret }}</code>
+
+    <form method="POST" action="{{ url_for('verify_mfa_setup') }}">
+        <label for="mfa_token">Verification code</label>
+        <input type="text" id="mfa_token" name="mfa_token"
+               maxlength="6" pattern="\d{6}" inputmode="numeric"
+               autocomplete="one-time-code" required autofocus
+               placeholder="000000">
+        <button type="submit" class="btn">Confirm &amp; Enable MFA</button>
+    </form>
+</div>
+{% endblock %}

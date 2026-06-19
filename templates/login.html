@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Login - SecWeb{% endblock %}
+
+{% block content %}
+    <div class="card form-card">
+        <h1>Login</h1>
+        <form method="POST" action="{{ url_for('login') }}">
+            <label for="username">Username or Email</label>
+            <input type="text" id="username" name="username" required autofocus>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit" class="btn">Login</button>
+        </form>
+
+        <div class="form-links">
+            <a href="{{ url_for('forgot_password') }}">Forgot password?</a>
+            <a href="{{ url_for('register') }}">Create an account</a>
+        </div>
+    </div>
+{% endblock %}

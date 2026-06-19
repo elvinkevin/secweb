@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Home - SecWeb{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <h1>Welcome to SecWeb</h1>
+        <p>
+            This is a small demo web application built with Flask, intended
+            for practicing web application security concepts: authentication,
+            session management, password reset flows, input validation, and
+            more.
+        </p>
+
+        {% if session.user_id %}
+            <p>You're logged in as <strong>{{ session.username }}</strong>.</p>
+            <a class="btn" href="{{ url_for('dashboard') }}">Go to Dashboard</a>
+        {% else %}
+            <div class="cta-group">
+                <a class="btn" href="{{ url_for('login') }}">Login</a>
+                <a class="btn btn-secondary" href="{{ url_for('register') }}">Create Account</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

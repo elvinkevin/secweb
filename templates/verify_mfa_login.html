@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Two-Factor Verification - SecWeb{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <h1>Two-Factor Authentication</h1>
+    <p>Enter the 6-digit code from your authenticator app.</p>
+
+    <form method="POST" action="{{ url_for('verify_mfa_login') }}">
+        <label for="mfa_token">Verification code</label>
+        <input type="text" id="mfa_token" name="mfa_token"
+               maxlength="6" pattern="\d{6}" inputmode="numeric"
+               autocomplete="one-time-code" required autofocus
+               placeholder="000000">
+        <button type="submit" class="btn">Verify</button>
+    </form>
+
+    <div class="form-links">
+        <a href="{{ url_for('logout') }}">Cancel and go back</a>
+    </div>
+</div>
+{% endblock %}
