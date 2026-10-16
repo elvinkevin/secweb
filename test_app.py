@@ -17,7 +17,11 @@ from unittest.mock import MagicMock, patch
 import pyotp
 import pytest  # pyright: ignore[reportMissingImports]
 
-import app as app_module
+import database
+
+# Importing app normally bootstraps PostgreSQL before the tests can mock db.
+with patch.object(database, "init_db"):
+    import app as app_module
 
 
 # ---------------------------------------------------------------------------

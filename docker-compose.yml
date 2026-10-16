@@ -4,15 +4,15 @@ services:
     container_name: postgres-db
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: super_secure_password # Set your password here
-      POSTGRES_DB: secweb                      # Matches your python dbname
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-local_dev_only_password} 
+      POSTGRES_DB: ${DB_NAME:-secweb}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d secweb"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-secweb}"]
       interval: 3s
       timeout: 3s
       retries: 5
@@ -27,9 +27,11 @@ services:
       - PORT=8000
       - DB_HOST=db
       - DB_PORT=5432
-      - DB_NAME=secweb
-      - DB_USER=postgres
-      - DB_PASSWORD=super_secure_password      # Must match POSTGRES_PASSWORD above
+      - DB_NAME=${DB_NAME:-secweb}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-local_dev_only_password}
+      - SECRET_KEY=${SECRET_KEY}
+
     depends_on:
       db:
         condition: service_healthy
