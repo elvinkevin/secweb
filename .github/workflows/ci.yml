@@ -19,8 +19,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       # Leverages GitHub's cache to store Docker image layers between runs
-            # Change docker/bake-action@v3 to @v6 to fix the version compatibility error
-      - name: Build Application Image Locally
+      - name: Build Application Image
         uses: docker/bake-action@v6
         with:
           load: true
@@ -28,18 +27,7 @@ jobs:
             *.cache-from=type=local,src=/tmp/.buildx-cache
             *.cache-to=type=local,dest=/tmp/.buildx-cache-new,mode=max
 
-
-      # Tells Docker Compose to use the cached layers when building your application
-      - name: Build Application Image
-        uses: docker/bake-action@v3
-        with:
-          files: docker-compose.yml
-          load: true
-          set: |
-            *.cache-from=type=local,src=/tmp/.buildx-cache
-            *.cache-to=type=local,dest=/tmp/.buildx-cache-new,mode=max
-
-      # Safely injects GitHub Secrets and runs your entire test suite
+      # Builds/starts the full compose stack (db + web) with secrets injected
       - name: Run Tests via Docker Compose
         env:
           FLASK_ENV: testing

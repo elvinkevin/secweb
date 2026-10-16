@@ -30,7 +30,7 @@ services:
       - DB_NAME=${DB_NAME:-secweb}
       - DB_USER=${DB_USER:-postgres}
       - DB_PASSWORD=${DB_PASSWORD:-local_dev_only_password}
-      - SECRET_KEY=${SECRET_KEY}
+      - SECRET_KEY=${SECRET_KEY:-local_dev_only_key}
 
     depends_on:
       db:
