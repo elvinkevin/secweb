@@ -19,13 +19,15 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       # Leverages GitHub's cache to store Docker image layers between runs
-      - name: Cache Docker layers
-        uses: actions/cache@v4
+            # Change docker/bake-action@v3 to @v6 to fix the version compatibility error
+      - name: Build Application Image Locally
+        uses: docker/bake-action@v6
         with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+          load: true
+          set: |
+            *.cache-from=type=local,src=/tmp/.buildx-cache
+            *.cache-to=type=local,dest=/tmp/.buildx-cache-new,mode=max
+
 
       # Tells Docker Compose to use the cached layers when building your application
       - name: Build Application Image
