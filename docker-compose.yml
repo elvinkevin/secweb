@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: super_secure_password # Set your password here
+      POSTGRES_DB: secweb                      # Matches your python dbname
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d secweb"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  web:
+    build: .
+    container_name: python-alpine-app
+    restart: always
+    ports:
+      - "8000:8000" 
+    environment:
+      - PORT=8000
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=secweb
+      - DB_USER=postgres
+      - DB_PASSWORD=super_secure_password      # Must match POSTGRES_PASSWORD above
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

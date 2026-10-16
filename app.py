@@ -413,10 +413,41 @@ def dashboard():
 
 
 # ---------------------------------------------------------------------------
-# Startup
+# Startup — initialize the database schema
 # ---------------------------------------------------------------------------
+# This MUST run at import time, not just under `if __name__ == "__main__"`.
+# Containers typically boot the app with gunicorn/flask (which import the
+# module), so a __main__-guarded init would never execute and the first
+# request would hit a missing table.
+
+
+def _init_db_with_retry(max_attempts: int = 30, delay: float = 1.0) -> None:
+    """
+    Run db.init_db(), retrying while the database is unreachable.
+
+    In a container stack (e.g. docker compose) the Postgres container often
+    starts after the app container, so the first connection attempts fail.
+    Retrying here lets the app wait for the DB instead of crash-looping.
+    """
+    import time
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            db.init_db()
+            print(f"[startup] database schema ready (attempt {attempt})")
+            return
+        except Exception as exc:
+            print(f"[startup] DB not ready (attempt {attempt}/{max_attempts}): {exc}")
+            if attempt == max_attempts:
+                raise
+            time.sleep(delay)
+
+
+_init_db_with_retry()
+
 
 if __name__ == "__main__":
-    db.init_db()
     debug = os.environ.get("FLASK_DEBUG", "true").lower() == "true"
-    app.run(debug=debug, host="127.0.0.1", port=5000)
+    # PORT is set by the container/compose; default 5000 for local runs.
+    port = int(os.environ.get("PORT", "5000"))
+    app.run(debug=debug, host="0.0.0.0", port=port)
